@@ -1,0 +1,2107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Creator Profile — Full (Stories + Chat + Donate)</title>
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --fg: #111827;
+      --accent: #2563eb;
+      --muted: #6b7280;
+      --radius: 20px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body { 
+      margin: 0; 
+      background: var(--bg); 
+      color: var(--fg); 
+      overflow-x: hidden;
+    }
+    
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 0 16px; 
+    }
+
+    /* Animated background particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    /* Header/Profile */
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: .8rem 1rem; 
+      position: relative;
+      z-index: 10;
+    }
+    
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--fg);
+      font-weight: 700;
+    }
+    
+    .menu-btn { 
+      background: none; 
+      border: none; 
+      font-size: 1.8rem; 
+      cursor: pointer; 
+      padding: 0.8rem;
+      transition: transform 0.2s ease;
+      border-radius: 12px;
+      color: var(--fg);
+    }
+    
+    .menu-btn:hover {
+      transform: scale(1.1);
+      background: rgba(0,0,0,0.05);
+    }
+    
+    nav { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      right: -50%; 
+      width: 50%; 
+      height: 100vh; 
+      background: rgba(249, 250, 251, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: -2px 0 20px rgba(0,0,0,0.1); 
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+      z-index: 1000; 
+    }
+    
+    nav.open { 
+      display: block; 
+      right: 0; 
+    }
+    
+    .nav-header { 
+      display: flex; 
+      justify-content: flex-end; 
+      padding: 1rem; 
+    }
+    
+    .close-nav-btn { 
+      background: none; 
+      border: none; 
+      font-size: 1.8rem; 
+      cursor: pointer; 
+      color: var(--fg); 
+      padding: 0.8rem;
+      transition: transform 0.2s ease;
+      border-radius: 50%;
+    }
+    
+    .close-nav-btn:hover {
+      transform: rotate(90deg) scale(1.1);
+      background: rgba(0,0,0,0.05);
+    }
+    
+    nav ul { 
+      list-style: none; 
+      padding: 2rem; 
+      margin: 0; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 1.5rem; 
+    }
+    
+    nav li { margin: 0; }
+    
+    nav a { 
+      color: var(--fg); 
+      text-decoration: none; 
+      font-weight: 500; 
+      font-size: 1.2rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    nav a:hover { 
+      color: var(--accent);
+      background: rgba(37, 99, 235, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .profile { 
+      text-align: center; 
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .profile-pic-wrapper { 
+      position: relative; 
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+    
+    .profile-pic-wrapper:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Animated Instagram Story Border */
+    .profile-pic-wrapper.has-story {
+      position: relative;
+      padding: 4px;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      border-radius: 50%;
+      animation: storyBorderPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes storyBorderPulse {
+      0%, 100% { 
+        background-size: 100% 100%;
+        box-shadow: 0 0 0 0 rgba(240, 148, 51, 0.4);
+      }
+      50% { 
+        background-size: 110% 110%;
+        box-shadow: 0 0 0 8px rgba(240, 148, 51, 0.1);
+      }
+    }
+    
+    .profile-pic-wrapper.has-story .profile-pic {
+      border: 3px solid var(--bg);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .profile img.profile-pic { 
+      width: 120px; 
+      height: 120px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      cursor: pointer; 
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    .profile img.profile-pic:hover {
+      filter: brightness(1.1);
+    }
+    
+    .creator-name { 
+      font-size: 1.8rem; 
+      font-weight: 700; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: .5rem; 
+      margin-top: 1rem;
+      color: var(--fg);
+    }
+    
+    .verified { 
+      color: var(--accent); 
+      font-size: 1.4rem;
+      animation: verifiedPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes verifiedPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .username { 
+      color: var(--muted); 
+      margin: 0.5rem 0 1rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .stats { 
+      display: flex; 
+      justify-content: center; 
+      gap: 3rem; 
+      margin: 1.5rem 0;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+    
+    .stat {
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    
+    .stat:hover {
+      transform: translateY(-2px);
+    }
+    
+    .stat strong { 
+      display: block; 
+      font-size: 1.4rem;
+      color: var(--fg);
+      font-weight: 800;
+    }
+    
+    .actions { 
+      display: flex; 
+      gap: 1rem; 
+      justify-content: center; 
+      margin: 2rem 0; 
+    }
+    
+    .actions button { 
+      flex: 1; 
+      padding: 1rem 1.5rem; 
+      border-radius: var(--radius); 
+      border: 0; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    .actions button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .actions button:hover:before {
+      left: 100%;
+    }
+    
+    .actions button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .subscribe { 
+      background: var(--accent);
+      color: white;
+    }
+    
+    .message { 
+      background: #e5e7eb;
+      color: var(--fg);
+    }
+    
+    .donate { 
+      background: #facc15;
+      color: var(--fg);
+    }
+
+    /* Enhanced Tabs */
+    .tabs { 
+      display: flex; 
+      justify-content: center; 
+      gap: 0; 
+      margin: 2rem 0 1rem 0; 
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem;
+      border-radius: 25px;
+      box-shadow: var(--shadow);
+      position: relative;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .tab-indicator {
+      position: absolute;
+      height: calc(100% - 1rem);
+      background: var(--accent);
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      top: 0.5rem;
+      z-index: 1;
+    }
+    
+    .tab-btn { 
+      background: none; 
+      border: none; 
+      padding: 1rem 2rem; 
+      cursor: pointer; 
+      font-weight: 600; 
+      color: var(--muted); 
+      font-size: 1.1rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+    
+    .tab-btn.active { 
+      color: white;
+    }
+    
+    .tab-btn:not(.active):hover {
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+    
+    .tab-content { 
+      display: none; 
+      margin: 2rem 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+    }
+    
+    .tab-content.active { 
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .media-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+      gap: 1.5rem; 
+    }
+    
+    .media-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+    
+    .media-item:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .media-grid img, .media-grid video { 
+      width: 100%; 
+      height: 250px; 
+      object-fit: cover; 
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+    }
+    
+    .media-item:hover img,
+    .media-item:hover video {
+      transform: scale(1.1);
+    }
+    
+    .media-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(37, 99, 235, 0.8);
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      border-radius: var(--radius);
+    }
+    
+    .media-item:hover .media-overlay {
+      opacity: 1;
+    }
+
+    footer { 
+      text-align: center; 
+      margin: 3rem 0; 
+      color: var(--muted); 
+      font-size: .9rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Enhanced Chat */
+    .chat-screen { 
+      display: none; 
+      flex-direction: column; 
+      height: 100vh; 
+      background: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 2000;
+    }
+    
+    .chat-header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 1rem; 
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky; 
+      top: 0; 
+      z-index: 10; 
+    }
+    
+    .chat-header-left { 
+      display: flex; 
+      align-items: center; 
+      gap: 1rem; 
+    }
+    
+    .chat-header-left img { 
+      width: 45px; 
+      height: 45px; 
+      border-radius: 50%; 
+      object-fit: cover;
+      box-shadow: var(--shadow);
+    }
+    
+    .chat-user-info { 
+      display: flex; 
+      flex-direction: column; 
+      line-height: 1.3; 
+    }
+    
+    .chat-user-info strong { 
+      font-size: 1rem;
+      color: var(--fg);
+    }
+    
+    .online { 
+      font-size: .8rem; 
+      color: #10b981;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .online:before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: onlinePulse 2s infinite;
+    }
+    
+    @keyframes onlinePulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .chat-header-right { 
+      display: flex; 
+      align-items: center; 
+      gap: 1rem; 
+    }
+    
+    .chat-header button { 
+      background: rgba(37, 99, 235, 0.1); 
+      border: none; 
+      font-size: 1.4rem; 
+      cursor: pointer; 
+      color: var(--accent);
+      padding: 0.8rem;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .chat-header button:hover {
+      background: var(--accent);
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    .chat-messages { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 1rem;
+      background: #f3f4f6;
+    }
+    
+    .msg-wrapper { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-end;
+      animation: messageSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .msg { 
+      max-width: 75%; 
+      padding: 1rem 1.2rem; 
+      border-radius: 25px; 
+      line-height: 1.5; 
+      font-size: .95rem; 
+      word-wrap: break-word;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    
+    .creator-msg { 
+      background: #e5e7eb;
+      align-self: flex-start;
+      color: var(--fg);
+    }
+    
+    .user-msg { 
+      background: var(--accent);
+      color: white; 
+    }
+    
+    .seen { 
+      font-size: .75rem; 
+      color: var(--muted); 
+      margin-top: .3rem; 
+      margin-right: .5rem; 
+    }
+    
+    .typing { 
+      font-size: .85rem; 
+      color: var(--muted); 
+      font-style: italic; 
+      margin: .5rem 0;
+      background: #e5e7eb;
+      padding: 0.8rem 1.2rem;
+      border-radius: 20px;
+      align-self: flex-start;
+      animation: typingPulse 1.5s infinite;
+    }
+    
+    @keyframes typingPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    .chat-input { 
+      display: flex; 
+      align-items: center; 
+      padding: 1rem; 
+      background: white;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .chat-input input { 
+      flex: 1; 
+      padding: 1rem 1.5rem; 
+      border: 2px solid #d1d5db; 
+      border-radius: 25px; 
+      outline: none; 
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .chat-input input:focus {
+      border-color: var(--accent);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+    
+    .chat-input button { 
+      background: var(--accent);
+      border: none; 
+      font-size: 1.4rem; 
+      margin-left: 1rem; 
+      cursor: pointer; 
+      color: white;
+      padding: 1rem;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+    
+    .chat-input button:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Enhanced Modals */
+    .modal { 
+      display: none; 
+      position: fixed; 
+      z-index: 3000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      justify-content: center; 
+      align-items: center;
+      animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content { 
+      background: white;
+      padding: 2.5rem; 
+      border-radius: 25px; 
+      max-width: 450px; 
+      width: 90%; 
+      text-align: center; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .modal-content h3 { 
+      margin: 0 0 1.5rem; 
+      font-size: 1.5rem;
+      color: var(--fg);
+      font-weight: 700;
+    }
+    
+    .close-x-button { 
+      position: absolute; 
+      top: 15px; 
+      right: 20px; 
+      font-size: 20px; 
+      cursor: pointer; 
+      background: rgba(0, 0, 0, 0.1);
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: var(--fg);
+    }
+    
+    .close-x-button:hover {
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+      transform: rotate(90deg);
+    }
+    
+    .modal-button { 
+      padding: 1rem 2rem; 
+      margin: .8rem; 
+      border: none; 
+      border-radius: 25px; 
+      cursor: pointer; 
+      font-size: 1.1rem; 
+      font-weight: 600; 
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .modal-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btc-button { 
+      background: linear-gradient(45deg, #f7931a, #ffbf00); 
+    }
+    
+    .paypal-button { 
+      background: #0070ba; 
+    }
+
+    .back-button { 
+      background: #f7931a; 
+      color: white; 
+      border: none; 
+      border-radius: 20px; 
+      padding: .8rem 1.4rem; 
+      margin-top: .6rem; 
+      cursor: pointer; 
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    
+    .qr-code { 
+      border: 2px solid #f7931a; 
+      border-radius: 10px; 
+      padding: 8px; 
+      margin: 10px auto; 
+      background: white; 
+      width: 100%; 
+      max-width: 200px; 
+      display: block; 
+    }
+    
+    .wallet-address-container { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin: 10px 0; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+    }
+    
+    .wallet-address { 
+      word-break: break-all; 
+      font-family: monospace; 
+      font-size: 13px; 
+      color: #444; 
+      padding: 8px 10px; 
+      background: #f1f1f1; 
+      border-radius: 5px; 
+      flex: 1; 
+      text-align: center; 
+    }
+    
+    .copy-button { 
+      background: #28a745; 
+      color: white; 
+      padding: .8rem 1.4rem; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .copy-button:hover { 
+      background: #218838;
+      transform: translateY(-2px);
+    }
+    
+    .status-message { 
+      font-size: 14px; 
+      margin-top: 10px; 
+      display: none; 
+    }
+    
+    .status-success { 
+      color: #28a745; 
+    }
+    
+    .status-error { 
+      color: #dc3545; 
+    }
+    
+    .donate-button { 
+      background: linear-gradient(45deg, #f7931a, #ffbf00); 
+      color: white; 
+      padding: .8rem 1.4rem; 
+      border: none; 
+      border-radius: 25px; 
+      cursor: pointer; 
+      font-size: 1.1rem; 
+      font-weight: bold; 
+      margin-top: .6rem; 
+      box-shadow: 0 4px 8px rgba(247, 147, 26, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .donate-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(247, 147, 26, 0.4);
+    }
+
+    /* Enhanced Story Modal */
+    .story-modal { 
+      display: none; 
+      position: fixed; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      z-index: 4000; 
+      justify-content: center; 
+      align-items: center;
+      animation: storyFadeIn 0.4s ease;
+    }
+    
+    @keyframes storyFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .story-container { 
+      position: relative; 
+      width: 100%; 
+      height: 100%; 
+      max-width: 420px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      overflow: hidden; 
+      border-radius: 20px; 
+      background: #000;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    
+    .story-image { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      display: none;
+      transition: all 0.5s ease;
+    }
+    
+    .story-image.active { 
+      display: block;
+      animation: storySlideIn 0.5s ease;
+    }
+    
+    @keyframes storySlideIn {
+      from {
+        opacity: 0;
+        transform: scale(1.1);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .story-header {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      right: 25px;
+      z-index: 70;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    
+    .story-user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .story-profile-pic {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: var(--shadow);
+    }
+    
+    .story-user-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .story-username {
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .story-verified {
+      color: #1DA1F2;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      animation: verifiedGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes verifiedGlow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.2) drop-shadow(0 0 8px #1DA1F2); }
+    }
+
+    .progress-bars { 
+      position: absolute; 
+      top: 85px; 
+      left: 15px; 
+      right: 15px; 
+      height: 4px; 
+      display: flex; 
+      gap: 8px; 
+      z-index: 50; 
+    }
+    
+    .progress-bar { 
+      flex: 1; 
+      height: 100%; 
+      background: rgba(255,255,255,0.25); 
+      border-radius: 3px; 
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    .progress-bar-fill { 
+      height: 100%; 
+      background: linear-gradient(90deg, #fff, #f0f0f0);
+      width: 0%;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    
+    .story-count { 
+      position: absolute; 
+      top: 90px; 
+      left: 18px; 
+      color: #fff; 
+      font-size: 12px; 
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px; 
+      border-radius: 15px; 
+      z-index: 60;
+      font-weight: 600;
+    }
+
+    .btn { 
+      background: transparent; 
+      border: 0; 
+      width: 64px; 
+      height: 64px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      z-index: 60; 
+      font-size: 28px; 
+    }
+    
+    .close-btn { 
+      position: absolute; 
+      top: 28px; 
+      right: 28px; 
+      width: 35px; 
+      height: 35px; 
+      font-size: 16px; 
+      line-height: 35px; 
+      text-align: center; 
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 50%; 
+      color: #fff; 
+      z-index: 75;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .close-btn:hover {
+      background: rgba(220, 38, 38, 0.8);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    .nav-btn { 
+      position: absolute; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 50%; 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 60; 
+      color: #fff;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .nav-btn.visible { 
+      display: flex; 
+    }
+    
+    .nav-btn-left { 
+      left: 20px; 
+    }
+    
+    .nav-btn-right { 
+      right: 20px; 
+    }
+    
+    .story-controls { 
+      position: absolute; 
+      bottom: 35px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      display: flex; 
+      gap: 15px; 
+      width: 92%; 
+      align-items: center; 
+      z-index: 60; 
+    }
+    
+    .reply-input { 
+      flex: 1; 
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.2); 
+      border-radius: 25px; 
+      padding: 15px 20px; 
+      color: #fff; 
+      outline: none; 
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .reply-input:focus {
+      background: rgba(255,255,255,0.2);
+      border-color: rgba(255,255,255,0.4);
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+    
+    .reply-input::placeholder { 
+      color: rgba(255,255,255,0.7); 
+    }
+    
+    .send-btn { 
+      display: none; 
+      background: var(--accent);
+      border: 0; 
+      color: #fff; 
+      width: 55px; 
+      height: 55px; 
+      border-radius: 50%; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      font-size: 20px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+    
+    .send-btn:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .send-btn.visible { 
+      display: flex; 
+    }
+    
+    /* Enhanced heart like button */
+    .like-btn {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: 0 8px 16px rgba(255, 65, 108, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 75;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .like-btn:before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+    }
+    
+    .like-btn:hover:before {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .like-btn:hover {
+      transform: scale(1.15);
+      box-shadow: 0 12px 24px rgba(255, 65, 108, 0.4);
+    }
+    
+    .like-btn.liked {
+      background: linear-gradient(45deg, #fa709a, #fee140);
+      animation: likeAnimation 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes likeAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 12px;
+      }
+      
+      .profile {
+        padding: 1.5rem 0.5rem;
+      }
+      
+      .stats {
+        gap: 1.5rem;
+        padding: 1rem;
+      }
+      
+      .actions {
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      
+      .actions button {
+        padding: 1rem;
+      }
+      
+      .tabs {
+        margin: 1.5rem 0 1rem 0;
+        padding: 0.3rem;
+      }
+      
+      .tab-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+      }
+      
+      .media-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      
+      .media-grid img, .media-grid video {
+        height: 180px;
+      }
+      
+      .story-container {
+        border-radius: 0;
+      }
+      
+      .modal-content {
+        margin: 1rem;
+        padding: 2rem;
+      }
+      
+      nav {
+        width: 80%;
+        right: -80%;
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(37, 99, 235, .3);
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Success/Error Messages */
+    .message-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      color: white;
+      font-weight: 600;
+      z-index: 5000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .message-toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .message-toast.success {
+      background: #10b981;
+    }
+    
+    .message-toast.error {
+      background: #ef4444;
+    }
+
+    /* Enhanced scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated particles background -->
+  <div class="particles" id="particles"></div>
+
+  <div class="container main-screen">
+    <header>
+      <h1>Creator</h1>
+      <button class="menu-btn">☰</button>
+      <nav>
+        <div class="nav-header">
+          <button class="close-nav-btn">✕</button>
+        </div>
+        <ul>
+          <li><a href="#" data-section="home">Home</a></li>
+          <li><a href="#" data-section="about">About</a></li>
+          <li><a href="#" data-section="support">Support</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="profile">
+      <div class="profile-pic-wrapper has-story">
+        <img id="profilePic" class="profile-pic" src="profile.png" alt="Creator profile picture">
+      </div>
+      <div class="creator-name">Sofia Creator <span class="verified">✓</span></div>
+      <div class="username">@sofia123</div>
+      <div class="stats">
+        <div class="stat">
+          <strong id="followerCount">15.2k</strong> 
+          <span>Followers</span>
+        </div>
+        <div class="stat">
+          <strong id="likeCount">320k</strong> 
+          <span>Likes</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="subscribe" id="subscribeBtn">Subscribe</button>
+        <button class="message" id="openChat">Message</button>
+        <button class="donate" id="openDonate">Donate</button>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <div class="tab-indicator" id="tabIndicator"></div>
+      <button class="tab-btn active" data-tab="photos">Photos</button>
+      <button class="tab-btn" data-tab="reels">Reels</button>
+      <button class="tab-btn" data-tab="exclusive">Exclusive</button>
+    </div>
+
+    <section id="photos" class="tab-content active">
+      <div class="media-grid" id="photosGrid">
+        <div class="media-item">
+          <img src="photo1.jpg" alt="Photo 1">
+          <div class="media-overlay">👁️</div>
+        </div>
+        <div class="media-item">
+          <img src="photo2.jpg" alt="Photo 2">
+          <div class="media-overlay">👁️</div>
+        </div>
+        <div class="media-item">
+          <img src="photo3.jpg" alt="Photo 3">
+          <div class="media-overlay">👁️</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reels" class="tab-content">
+      <div class="media-grid" id="reelsGrid">
+        <div class="media-item">
+          <video src="reels1.mp4" controls></video>
+          <div class="media-overlay">▶️</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="exclusive" class="tab-content">
+      <div class="media-grid" id="exclusiveGrid">
+        <div class="media-item">
+          <img src="exclusive1.jpg" alt="Exclusive content locked">
+          <div class="media-overlay">🔒</div>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--muted);margin-top:2rem;">Subscribe to unlock exclusive content ✨</p>
+    </section>
+
+    <footer>&copy; <span id="year"></span> Sofia Creator</footer>
+  </div>
+
+  <!-- Enhanced Chat Screen -->
+  <div id="chatScreen" class="chat-screen container">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <button class="btn" id="backToMain">←</button>
+        <img src="profile.png" alt="Creator">
+        <div class="chat-user-info">
+          <strong>Sofia Creator</strong>
+          <span class="online">Online</span>
+        </div>
+      </div>
+      <div class="chat-header-right">
+        <button title="Video Call">📹</button>
+        <button title="Voice Call">📞</button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Message...">
+      <button id="sendMessage">➤</button>
+    </div>
+  </div>
+
+  <!-- Enhanced Donation Modal -->
+  <div id="chooseMethodModal" class="modal">
+    <div class="modal-content">
+      <button class="close-x-button" id="closeDonate">X</button>
+      <h3>Choose Your Donation Method</h3>
+      <div class="modal-buttons-container">
+        <button class="modal-button btc-button" id="openBtcDonate">Donate with Bitcoin</button>
+        <form action="https://www.paypal.com/donate" method="post" target="_blank" style="display:inline;">
+          <input type="hidden" name="business" value="YOUR_PAYPAL_EMAIL@EXAMPLE.COM"/>
+          <input type="hidden" name="currency_code" value="USD"/>
+          <input type="submit" class="modal-button paypal-button" value="Donate with PayPal"/>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="btcDonateModal" class="modal">
+    <div class="modal-content">
+      <button class="close-x-button" id="closeBtcDonate">X</button>
+      <h3>Support Us with Bitcoin! 🚀</h3>
+      <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=bc1q0ehvhyeaqnzj7apuk0a6d4ureayfl038cs8r6n" alt="BTC QR Code" class="qr-code">
+      <p>Scan the QR code or copy the address below:</p>
+      <div class="wallet-address-container">
+        <div class="wallet-address" id="btcAddress">bc1q0ehvhyeaqnzj7apuk0a6d4ureayfl038cs8r6n</div>
+        <button class="copy-button" id="copyBtcAddress">Copy</button>
+      </div>
+      <div id="statusMessage" class="status-message"></div>
+      <button class="donate-button" id="donateBtcNow">Donate BTC Now</button>
+      <button class="back-button" id="backToDonate">Back</button>
+    </div>
+  </div>
+
+  <!-- Enhanced Story Modal -->
+  <div id="storyModal" class="story-modal">
+    <div class="story-container" id="storyContainer">
+      <div class="story-header">
+        <div class="story-user-info">
+          <img src="profile.png" alt="Profile" class="story-profile-pic">
+          <div class="story-user-details">
+            <span class="story-username">Sofia Creator</span>
+            <span class="story-verified">✓</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="progressBars" class="progress-bars"></div>
+      <div id="storyCount" class="story-count"></div>
+
+      <img src="storyimage1.jpg" class="story-image active" data-index="0" alt="Story 1">
+      <img src="storyimage2.jpg" class="story-image" data-index="1" alt="Story 2">
+      <img src="storyimage3.jpg" class="story-image" data-index="2" alt="Story 3">
+
+      <button class="btn close-btn" id="storyCloseBtn">✕</button>
+      <button class="btn nav-btn nav-btn-left" id="prevStoryBtn">◀</button>
+      <button class="btn nav-btn nav-btn-right" id="nextStoryBtn">▶</button>
+
+      <div class="story-controls">
+        <input id="replyInput" class="reply-input" placeholder="Reply to this story">
+        <button id="sendStoryBtn" class="send-btn">➤</button>
+        <button id="likeStoryBtn" class="btn like-btn">❤</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Initialize year
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// Create animated particles
+function createParticles() {
+  const particles = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.top = Math.random() * 100 + '%';
+    particle.style.width = Math.random() * 4 + 2 + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.animationDelay = Math.random() * 6 + 's';
+    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    particles.appendChild(particle);
+  }
+}
+createParticles();
+
+// Enhanced Menu System
+const menuBtn = document.querySelector(".menu-btn");
+const nav = document.querySelector("nav");
+const closeNavBtn = document.querySelector(".close-nav-btn");
+
+menuBtn.onclick = () => {
+  nav.classList.add("open");
+  document.body.style.overflow = 'hidden';
+};
+
+closeNavBtn.onclick = () => {
+  nav.classList.remove("open");
+  document.body.style.overflow = 'auto';
+};
+
+// Close nav when clicking outside
+nav.onclick = (e) => {
+  if (e.target === nav) {
+    nav.classList.remove("open");
+    document.body.style.overflow = 'auto';
+  }
+};
+
+// Enhanced Tab System with Indicator
+const tabBtns = document.querySelectorAll(".tab-btn");
+const tabContents = document.querySelectorAll(".tab-content");
+const tabIndicator = document.getElementById("tabIndicator");
+
+function updateTabIndicator(activeTab) {
+  const tabIndex = Array.from(tabBtns).findIndex(btn => btn === activeTab);
+  const tabWidth = activeTab.offsetWidth;
+  const tabLeft = activeTab.offsetLeft;
+  
+  tabIndicator.style.width = tabWidth + 'px';
+  tabIndicator.style.left = tabLeft + 'px';
+}
+
+// Initialize tab indicator
+setTimeout(() => updateTabIndicator(document.querySelector('.tab-btn.active')), 100);
+
+tabBtns.forEach((btn, index) => {
+  btn.onclick = () => {
+    // Remove active class from all tabs and contents
+    tabBtns.forEach(b => b.classList.remove("active"));
+    tabContents.forEach(c => c.classList.remove("active"));
+    
+    // Add active class to clicked tab and corresponding content
+    btn.classList.add("active");
+    const targetContent = document.getElementById(btn.dataset.tab);
+    
+    setTimeout(() => {
+      targetContent.classList.add("active");
+    }, 150);
+    
+    // Update indicator
+    updateTabIndicator(btn);
+    
+    // Add some dynamic content loading simulation
+    if (btn.dataset.tab === 'reels') {
+      showToast('🎬 Loading latest reels...', 'success');
+    } else if (btn.dataset.tab === 'exclusive') {
+      showToast('⭐ Exclusive content requires subscription', 'error');
+    }
+  };
+});
+
+// Enhanced Subscribe Button
+const subscribeBtn = document.getElementById('subscribeBtn');
+let isSubscribed = false;
+
+subscribeBtn.onclick = () => {
+  isSubscribed = !isSubscribed;
+  const btn = subscribeBtn;
+  const followerCountEl = document.getElementById('followerCount');
+  let currentCount = parseFloat(followerCountEl.textContent);
+  
+  if (isSubscribed) {
+    btn.innerHTML = '<span class="loading"></span> Subscribing...';
+    btn.style.background = '#10b981';
+    
+    setTimeout(() => {
+      btn.innerHTML = '✓ Subscribed';
+      followerCountEl.textContent = (currentCount + 0.001).toFixed(1) + 'k';
+      showToast('🎉 Successfully subscribed to Sofia!', 'success');
+      
+      // Update follower count with animation
+      animateCount(followerCountEl, currentCount * 1000, (currentCount + 0.001) * 1000, 1000);
+    }, 2000);
+  } else {
+    btn.innerHTML = 'Subscribe';
+    btn.style.background = 'var(--accent)';
+    followerCountEl.textContent = currentCount.toFixed(1) + 'k';
+    showToast('👋 Unsubscribed from Sofia', 'error');
+  }
+};
+
+// Enhanced Chat System
+const chatScreen = document.getElementById("chatScreen");
+const openChat = document.getElementById("openChat");
+const backToMain = document.getElementById("backToMain");
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const sendMessage = document.getElementById("sendMessage");
+
+const chatResponses = [
+  "Thanks for reaching out! 💖",
+  "I love connecting with my fans! 🌟",
+  "Check this out 👉 https://mywebsite.com",
+  "Have you seen my new exclusive posts? ✨",
+  "You're amazing! Thanks for the support 🙏",
+  "What's your favorite type of content? 🤔",
+  "Stay tuned for more exciting updates! 🚀"
+];
+
+function addMessage(text, sender = "creator", delay = 0) {
+  setTimeout(() => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "msg-wrapper";
+    if (sender === "creator") wrapper.style.alignItems = "flex-start";
+    
+    const msg = document.createElement("div");
+    msg.className = "msg " + (sender === "creator" ? "creator-msg" : "user-msg");
+    
+    // Enhanced message formatting
+    if (text.includes('http')) {
+      const linkText = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+      msg.innerHTML = linkText;
+    } else {
+      msg.textContent = text;
+    }
+    
+    wrapper.appendChild(msg);
+    chatMessages.appendChild(wrapper);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return wrapper;
+  }, delay);
+}
+
+function addSeen(wrapper) {
+  setTimeout(() => {
+    const seen = document.createElement("div");
+    seen.className = "seen";
+    seen.textContent = "Seen";
+    wrapper.appendChild(seen);
+  }, 1000);
+}
+
+function showTyping() {
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.innerHTML = 'Sofia is typing...';
+  chatMessages.appendChild(typing);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return typing;
+}
+
+openChat.onclick = () => {
+  chatScreen.style.display = "flex";
+  document.querySelector(".main-screen").style.display = "none";
+  chatMessages.innerHTML = "";
+  
+  // Welcome messages sequence
+  addMessage("Welcome to my chat! 💬", "creator", 400);
+};
+
+backToMain.onclick = () => {
+  chatScreen.style.display = "none";
+  document.querySelector(".main-screen").style.display = "block";
+};
+
+sendMessage.onclick = () => {
+  const text = chatInput.value.trim();
+  if (text) {
+    const wrapper = addMessage(text, "user");
+    chatInput.value = "";
+    
+    // Simulate seen status
+    setTimeout(() => {
+      addSeen(wrapper);
+      
+      // Show typing indicator
+      const typingIndicator = showTyping();
+      
+      // Send automated response
+      setTimeout(() => {
+        typingIndicator.remove();
+        const randomResponse = chatResponses[Math.floor(Math.random() * chatResponses.length)];
+        addMessage(randomResponse, "creator");
+      }, 2000 + Math.random() * 2000);
+    }, 1500);
+  }
+};
+
+chatInput.addEventListener("keypress", e => { 
+  if (e.key === "Enter") sendMessage.click(); 
+});
+
+// Enhanced Donation System
+const donateModal = document.getElementById("chooseMethodModal");
+const btcDonateModal = document.getElementById("btcDonateModal");
+const openDonate = document.getElementById("openDonate");
+const closeDonate = document.getElementById("closeDonate");
+const openBtcDonate = document.getElementById("openBtcDonate");
+const closeBtcDonate = document.getElementById("closeBtcDonate");
+const backToDonate = document.getElementById("backToDonate");
+const copyBtcAddress = document.getElementById("copyBtcAddress");
+const donateBtcNow = document.getElementById("donateBtcNow");
+const btcAddress = document.getElementById("btcAddress").textContent.trim();
+
+// Modal controls
+openDonate.onclick = () => {
+  donateModal.style.display = "flex";
+  document.body.style.overflow = 'hidden';
+};
+
+closeDonate.onclick = () => {
+  donateModal.style.display = "none";
+  document.body.style.overflow = 'auto';
+};
+
+openBtcDonate.onclick = () => {
+  donateModal.style.display = "none";
+  btcDonateModal.style.display = "flex";
+};
+
+closeBtcDonate.onclick = () => {
+  btcDonateModal.style.display = "none";
+  document.body.style.overflow = 'auto';
+};
+
+backToDonate.onclick = () => {
+  btcDonateModal.style.display = "none";
+  donateModal.style.display = "flex";
+};
+
+// Enhanced copy functionality
+copyBtcAddress.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(btcAddress);
+    copyBtcAddress.innerHTML = '✅ Copied!';
+    showStatus('📋 Bitcoin address copied to clipboard!', 'success');
+    
+    setTimeout(() => {
+      copyBtcAddress.innerHTML = 'Copy';
+    }, 3000);
+  } catch (err) {
+    showStatus('❌ Failed to copy address', 'error');
+  }
+};
+
+donateBtcNow.onclick = () => {
+  window.open("https://www.blockchain.com/explorer/addresses/btc/" + btcAddress, "_blank");
+  btcDonateModal.style.display = "none";
+  document.body.style.overflow = 'auto';
+  showToast('🚀 Opening Bitcoin explorer...', 'success');
+};
+
+function showStatus(msg, type) {
+  const s = document.getElementById("statusMessage");
+  s.textContent = msg;
+  s.className = "status-message status-" + type;
+  s.style.display = "block";
+  setTimeout(() => s.style.display = "none", 3000);
+}
+
+// Enhanced Stories System
+const profilePic = document.getElementById("profilePic");
+const storyModal = document.getElementById("storyModal");
+const storyContainer = document.getElementById("storyContainer");
+const storyCloseBtn = document.getElementById("storyCloseBtn");
+const prevStoryBtn = document.getElementById("prevStoryBtn");
+const nextStoryBtn = document.getElementById("nextStoryBtn");
+const storyImages = document.querySelectorAll(".story-image");
+const progressBars = document.getElementById("progressBars");
+const storyCount = document.getElementById("storyCount");
+const replyInput = document.getElementById("replyInput");
+const sendStoryBtn = document.getElementById("sendStoryBtn");
+const likeStoryBtn = document.getElementById("likeStoryBtn");
+
+let currentStory = 0;
+let timer;
+let total = storyImages.length;
+const duration = 10000; // 10 seconds per story
+let isLiked = false;
+
+function createBars() {
+  progressBars.innerHTML = "";
+  storyImages.forEach((_, index) => {
+    const bar = document.createElement("div");
+    bar.className = "progress-bar";
+    const fill = document.createElement("div");
+    fill.className = "progress-bar-fill";
+    bar.appendChild(fill);
+    progressBars.appendChild(bar);
+  });
+}
+
+function showStory(i) {
+  clearTimeout(timer);
+  
+  // Hide all stories
+  storyImages.forEach(img => img.classList.remove("active"));
+  
+  // Show current story
+  storyImages[i].classList.add("active");
+  
+  // Update progress bars
+  const fills = document.querySelectorAll(".progress-bar-fill");
+  fills.forEach((fill, j) => {
+    fill.style.transition = "none";
+    fill.style.width = j < i ? "100%" : "0%";
+  });
+  
+  // Force reflow
+  void progressBars.offsetWidth;
+  
+  // Animate current progress bar
+  fills[i].style.transition = `width ${duration}ms linear`;
+  requestAnimationFrame(() => {
+    fills[i].style.width = "100%";
+  });
+  
+  // Update story counter
+  storyCount.textContent = `${i + 1}/${total}`;
+  currentStory = i;
+  
+  // Reset like state for new story
+  isLiked = false;
+  likeStoryBtn.classList.remove("liked");
+  
+  updateNav();
+  start();
+}
+
+function updateNav() {
+  prevStoryBtn.classList.toggle("visible", currentStory > 0);
+  nextStoryBtn.classList.toggle("visible", currentStory < total - 1);
+}
+
+function start() {
+  timer = setTimeout(() => {
+    if (currentStory < total - 1) {
+      showStory(currentStory + 1);
+    } else {
+      closeStory();
+    }
+  }, duration);
+}
+
+function closeStory() {
+  clearTimeout(timer);
+  storyModal.style.display = "none";
+  document.body.style.overflow = 'auto';
+  currentStory = 0;
+  replyInput.value = "";
+  sendStoryBtn.classList.remove("visible");
+  
+  // Show completion message
+  showToast('✨ You\'ve seen all of Sofia\'s stories!', 'success');
+}
+
+// Story event listeners
+profilePic.onclick = () => {
+  storyModal.style.display = "flex";
+  document.body.style.overflow = 'hidden';
+  createBars();
+  showStory(0);
+};
+
+storyCloseBtn.onclick = closeStory;
+
+// Story navigation
+prevStoryBtn.onclick = () => {
+  if (currentStory > 0) {
+    clearTimeout(timer);
+    showStory(currentStory - 1);
+  }
+};
+
+nextStoryBtn.onclick = () => {
+  if (currentStory < total - 1) {
+    clearTimeout(timer);
+    showStory(currentStory + 1);
+  } else {
+    closeStory();
+  }
+};
+
+// Story interactions
+replyInput.oninput = () => {
+  sendStoryBtn.classList.toggle("visible", !!replyInput.value.trim());
+};
+
+sendStoryBtn.onclick = () => {
+  const reply = replyInput.value.trim();
+  if (reply) {
+    showToast(`💬 Reply sent: "${reply.substring(0, 30)}${reply.length > 30 ? '...' : ''}"`, 'success');
+    replyInput.value = "";
+    sendStoryBtn.classList.remove("visible");
+  }
+};
+
+likeStoryBtn.onclick = () => {
+  isLiked = !isLiked;
+  likeStoryBtn.classList.toggle("liked", isLiked);
+  
+  if (isLiked) {
+    showToast('❤️ Liked this story!', 'success');
+    // Add heart animation effect
+    createHeartEffect(likeStoryBtn);
+  } else {
+    showToast('💔 Unliked this story', 'error');
+  }
+};
+
+// Utility Functions
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `message-toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  // Show toast
+  setTimeout(() => toast.classList.add('show'), 100);
+  
+  // Hide toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => document.body.removeChild(toast), 400);
+  }, 3500);
+}
+
+function createHeartEffect(element) {
+  for (let i = 0; i < 6; i++) {
+    setTimeout(() => {
+      const heart = document.createElement('div');
+      heart.innerHTML = '❤️';
+      heart.style.position = 'absolute';
+      heart.style.left = element.offsetLeft + Math.random() * 40 + 'px';
+      heart.style.top = element.offsetTop + Math.random() * 40 + 'px';
+      heart.style.fontSize = Math.random() * 10 + 15 + 'px';
+      heart.style.pointerEvents = 'none';
+      heart.style.zIndex = '1000';
+      heart.style.opacity = '1';
+      heart.style.animation = 'heartFloat 1.5s ease-out forwards';
+      
+      element.parentNode.appendChild(heart);
+      
+      setTimeout(() => {
+        if (heart.parentNode) {
+          heart.parentNode.removeChild(heart);
+        }
+      }, 1500);
+    }, i * 100);
+  }
+}
+
+// Add heart float animation
+const heartAnimation = `
+  @keyframes heartFloat {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-60px) scale(0.5);
+      opacity: 0;
+    }
+  }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = heartAnimation;
+document.head.appendChild(styleSheet);
+
+function animateCount(element, start, end, duration) {
+  const range = end - start;
+  const increment = range / (duration / 16);
+  let current = start;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    
+    if (current >= 1000) {
+      element.textContent = (current / 1000).toFixed(1) + 'k';
+    } else {
+      element.textContent = Math.floor(current).toString();
+    }
+  }, 16);
+}
+
+// Enhanced Media Grid Interactions
+document.querySelectorAll('.media-item').forEach((item, index) => {
+  item.addEventListener('click', () => {
+    showToast(`🖼️ Opening media ${index + 1}...`, 'success');
+  });
+});
+
+// Enhanced Navigation Menu Interactions
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const section = link.dataset.section;
+    
+    // Close navigation
+    nav.classList.remove('open');
+    document.body.style.overflow = 'auto';
+    
+    // Show appropriate message based on section
+    switch(section) {
+      case 'home':
+        showToast('🏠 Welcome back to home!', 'success');
+        break;
+      case 'about':
+        showToast('👤 Learn more about Sofia', 'success');
+        break;
+      case 'support':
+        showToast('💬 Contact support opened', 'success');
+        break;
+      default:
+        showToast('📱 Feature coming soon!', 'error');
+    }
+  });
+});
+
+// Close modals when clicking outside
+[donateModal, btcDonateModal, storyModal].forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // ESC to close modals
+  if (e.key === 'Escape') {
+    if (storyModal.style.display === 'flex') {
+      closeStory();
+    } else if (donateModal.style.display === 'flex') {
+      closeDonate.click();
+    } else if (btcDonateModal.style.display === 'flex') {
+      closeBtcDonate.click();
+    } else if (nav.classList.contains('open')) {
+      closeNavBtn.click();
+    }
+  }
+  
+  // Arrow keys for story navigation
+  if (storyModal.style.display === 'flex') {
+    if (e.key === 'ArrowLeft' && currentStory > 0) {
+      prevStoryBtn.click();
+    } else if (e.key === 'ArrowRight' && currentStory < total - 1) {
+      nextStoryBtn.click();
+    } else if (e.key === 'ArrowRight' && currentStory === total - 1) {
+      closeStory();
+    }
+  }
+});
+
+// Add some initial welcome behavior
+setTimeout(() => {
+  showToast('👋 Welcome to Sofia\'s profile! Tap her picture to view stories', 'success');
+}, 2000);
+
+console.log('🚀 Enhanced Creator Profile loaded successfully!');
+</script>
+</body>
+</html>
